@@ -1,19 +1,16 @@
+#https://www.interviewcake.com/question/ruby/stock-price
 defmodule Stock do
-  def get_max_profit([first, second | _rest] = stock_prices_yesterday) do
-      compare_and_find_better_pair(stock_prices_yesterday, second - first)
+  def get_max_profit([first, second | rest]) do
+      compare_and_find_better_pair([second | rest], first, second - first)
   end
 
-  defp compare_and_find_better_pair([_first | []], max_diff), do: max_diff
-  defp compare_and_find_better_pair([first | rest], max_diff) do
-    if (temp = find_max(rest) - first) > max_diff, do: max_diff = temp
-    compare_and_find_better_pair(rest, max_diff)
+  defp compare_and_find_better_pair([], _min_price, max_diff), do: max_diff
+  defp compare_and_find_better_pair([first | rest], min_price, max_profit) do
+    potential_profit = first - min_price
+    if potential_profit > max_profit, do: max_profit = potential_profit
+    if min_price > first, do: min_price = first
+    compare_and_find_better_pair(rest, min_price, max_profit)
   end
-
-  def find_max([]), do: nil
-  def find_max([h | []]), do: h
-  def find_max([h1 , h2 | t]) when h1 <= h2, do: find_max([h2|t])
-  def find_max([h1 , _h2 | t]), do: find_max([h1|t])
-
 end
 
 IO.inspect Stock.get_max_profit([10,5,2])
