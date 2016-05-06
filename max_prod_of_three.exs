@@ -1,23 +1,26 @@
 #https://www.interviewcake.com/question/python/highest-product-of-3
 defmodule Max_product_from_three do
   def find(list) do
-    [a, b, c] = reduce_to_list_to_three_numbers(list, &smallest_number(&1))
-    [d, e] = reduce_to_list_to_three_numbers(list, &largest_number(&1))
-              |> reduce_one_element(&largest_number(&1))
-    largest_number([a * b * c] ++ Enum.map([a, b, c], fn x -> d * e * x end))
+    [a, b, c] = reduce_to_list_to_three_numbers(list, &smallest_number(&1)) #largest_three_number
+    [d, e] = reduce_to_list_to_three_numbers(list, &largest_number(&1)) #smallest_three_number
+              |> reduce_by_one_element(&largest_number(&1))
+    largest_number([a * b * c, e * d * largest_number([a, b, c])])
   end
 
   defp reduce_to_list_to_three_numbers([a, b, c], _func), do: [a, b, c]
-  defp reduce_to_list_to_three_numbers([a, b, c, d], func), do: reduce_one_element([a, b, c, d], func)
+  defp reduce_to_list_to_three_numbers([a, b, c, d], func), do: reduce_by_one_element([a, b, c, d], func)
   defp reduce_to_list_to_three_numbers([a, b, c, d | rest], func) do
-    reduce_to_list_to_three_numbers(reduce_one_element([a, b, c, d], func) ++ rest, func)
+    reduce_to_list_to_three_numbers(reduce_by_one_element([a, b, c, d], func) ++ rest, func)
   end
 
-  defp reduce_one_element(list, func) do
+  defp reduce_by_one_element(list, func) do
     matching_number = func.(list)
     list
-    |> Enum.reject(fn x -> x == matching_number end)
+    |> remove(matching_number, [])
   end
+
+  defp remove([h | rest], matching_number, new_list) when h == matching_number, do: new_list ++ rest
+  defp remove([h | list], matching_number, new_list), do: remove(list, matching_number, new_list ++ [h])
 
   defp smallest_number([]), do: nil
   defp smallest_number([a]), do: a
